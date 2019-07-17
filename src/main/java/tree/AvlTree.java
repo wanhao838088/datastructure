@@ -187,21 +187,29 @@ public class AvlTree<K extends Comparable<K>,V> {
                 node.right = null;
                 size--;
                 resNode = right;
-            }
-            if (node.right==null){
+            }else if (node.right==null){
                 Node<K, V> left = node.left;
                 node.left = null;
                 size--;
                 resNode = left;
-            }
-            //左右都不为空 找到右子树中最小的元素 代替这个节点
-            Node<K, V> minNode = getMinNode(node.right);
-            minNode.right = removeMin(node.right);
-            minNode.left = node.left;
-            node.left = node.right = null;
+            }else{
+                //左右都不为空 找到右子树中最小的元素 代替这个节点
+                Node<K, V> minNode = getMinNode(node.right);
+                //删除最小的节点
+                minNode.right = remove(node.right,minNode.key);
+                minNode.left = node.left;
+                node.left = node.right = null;
 
-            resNode = minNode;
+                resNode = minNode;
+            }
         }
+
+        if (resNode==null){
+            return null;
+        }
+        //从新计算高度
+        resNode.height = Math.max(getHeight(resNode.left),getHeight(resNode.right))+1;
+
         //平衡处理
         int factor = getBalanceFactor(resNode);
         //LL
