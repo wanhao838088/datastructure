@@ -170,27 +170,29 @@ public class AvlTree<K extends Comparable<K>,V> {
             return null;
         }
 
+        //删除节点后的结果
+        Node<K, V> resNode;
         if (node.key.compareTo(key)<0){
             //往右
             node.right = remove(node.right,key);
-            return node;
+            resNode = node;
         }else if(node.key.compareTo(key)>0){
             //往左
             node.left = remove(node.left,key);
-            return node;
+            resNode = node;
         }else {
             //匹配了
             if (node.left==null){
                 Node<K, V> right = node.right;
                 node.right = null;
                 size--;
-                return right;
+                resNode = right;
             }
             if (node.right==null){
                 Node<K, V> left = node.left;
                 node.left = null;
                 size--;
-                return left;
+                resNode = left;
             }
             //左右都不为空 找到右子树中最小的元素 代替这个节点
             Node<K, V> minNode = getMinNode(node.right);
@@ -198,8 +200,30 @@ public class AvlTree<K extends Comparable<K>,V> {
             minNode.left = node.left;
             node.left = node.right = null;
 
-            return minNode;
+            resNode = minNode;
         }
+        //平衡处理
+        int factor = getBalanceFactor(resNode);
+        //LL
+        if (factor>1 && getBalanceFactor(resNode.left)>=0){
+            return rightRotate(resNode);
+        }
+        //RR
+        if (factor<-1 && getBalanceFactor(resNode.right)<=0){
+            return leftRotate(resNode);
+        }
+        //LR
+        if (factor>1 && getBalanceFactor(resNode.left)<0){
+            //先左旋 再右旋
+            resNode.left = leftRotate(resNode.left);
+            return rightRotate(resNode);
+        }
+        //RL
+        if (factor<-1 && getBalanceFactor(resNode.right)>0){
+            resNode.right = rightRotate(resNode.right);
+            return leftRotate(resNode);
+        }
+        return resNode;
     }
 
 

@@ -30,6 +30,14 @@ public class AvlTest {
                     //System.out.println("重复");
                 }
             }
+            //测试删除
+            for (String word : words) {
+                tree.remove(word);
+                //判断是否是avl树
+                if(!tree.isBST() || !tree.isBalance()){
+                    throw new RuntimeException();
+                }
+            }
 
             System.out.println("不重复单词数量: " + tree.size());
             System.out.println("是否是搜索树:  "+tree.isBST());
